@@ -1,0 +1,1 @@
+# Fabricity Vite Bundle
