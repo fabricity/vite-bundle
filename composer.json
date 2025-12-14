@@ -1,0 +1,50 @@
+{
+    "name": "fabricity/vite-bundle",
+    "description": "A lightweight Symfony bundle that provides seamless Vite integration with automatic dev-server detection, manifest handling, and simple Twig helpers for loading compiled assets.",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": [
+        "vite"
+    ],
+    "authors": [
+        {
+            "name": "Fabricity",
+            "homepage": "https://github.com/fabricity"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "symfony/framework-bundle": "^6.0 || ^7.0",
+        "symfony/dependency-injection": "^6.0 || ^7.0",
+        "symfony/config": "^6.0 || ^7.0",
+        "symfony/twig-bundle": "^6.0 || ^7.0",
+        "symfony/http-client": "^6.0 || ^7.0"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Fabricity\\Bundle\\ViteBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fabricity\\Bundle\\ViteBundle\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.92",
+        "phpunit/phpunit": "^12.5"
+    },
+    "scripts": {
+        "phpcs": "php-cs-fixer --config=./tools/.php-cs-fixer.dist.php fix",
+        "test:unit": "phpunit -c ./tools/phpunit.xml.dist --testsuite Unit",
+        "test:functional": "phpunit -c ./tools/phpunit.xml.dist --testsuite Functional",
+        "test": [
+            "@test:unit",
+            "@test:functional"
+        ]
+    }
+}
