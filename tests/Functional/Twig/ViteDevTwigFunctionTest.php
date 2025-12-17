@@ -15,7 +15,8 @@ use Twig\Environment;
 class ViteDevTwigFunctionTest extends KernelTestCase
 {
     #[DataProvider('availabilityProvider')]
-    public function testViteDevAvailability(array|callable $responses, string $expected): void {
+    public function testViteDevAvailability(array|callable $responses, string $expected): void
+    {
         self::bootKernel();
 
         static::getContainer()->set(HttpClientInterface::class, new MockHttpClient($responses));
