@@ -43,9 +43,9 @@ jobs:
                 run: composer install --prefer-dist --no-progress --no-interaction
 
             -   name: Run PHPStan
-                run: vendor/bin/phpstan analyse --configuration=config/phpstan.neon.dist --error-format=github
+                run: vendor/bin/phpstan analyse --configuration=tools/phpstan.neon.dist --error-format=github
 
             -   name: Run PHP-CS-Fixer
                 run: |
                     PHP_CS_FIXER_IGNORE_ENV=1 \
-                    vendor/bin/php-cs-fixer fix --diff --dry-run --config=config/php-cs-fixer.php
+                    vendor/bin/php-cs-fixer fix --diff --dry-run --config=tools/php-cs-fixer.dist.php
