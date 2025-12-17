@@ -20,6 +20,9 @@ class FabricityViteBundle extends AbstractBundle
         ;
     }
 
+    /**
+     * @param array{ dev_server: string } $config
+     */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->import('../config/services.php');

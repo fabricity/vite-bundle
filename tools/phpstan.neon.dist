@@ -1,0 +1,9 @@
+parameters:
+    tmpDir: %currentWorkingDirectory%/tools/.cache/phpstan
+    level: max
+    paths:
+        - %currentWorkingDirectory%/src
+    excludePaths:
+        - %currentWorkingDirectory%/vendor/*
+    parallel:
+        maximumNumberOfProcesses: 2

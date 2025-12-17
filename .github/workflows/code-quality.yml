@@ -1,0 +1,51 @@
+name: Code Quality
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+
+env:
+    PHP_VERSION: 8.4
+
+jobs:
+    code-quality:
+        name: Code Quality
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ env.PHP_VERSION }}
+                    coverage: none
+                    tools: composer:v2
+
+            -   name: Get Composer cache dir
+                id: composer-cache
+                run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v4
+                with:
+                    path: |
+                        vendor
+                        ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+                    restore-keys: |
+                        ${{ runner.os }}-php-${{ env.PHP_VERSION }}-
+
+            -   name: Install dependencies
+                run: composer install --prefer-dist --no-progress --no-interaction
+
+            -   name: Run PHPStan
+                run: vendor/bin/phpstan analyse --configuration=tools/phpstan.neon.dist --error-format=github
+
+            -   name: Run PHP-CS-Fixer
+                run: |
+                    PHP_CS_FIXER_IGNORE_ENV=1 \
+                    vendor/bin/php-cs-fixer fix --diff --dry-run --config=tools/.php-cs-fixer.dist.php
