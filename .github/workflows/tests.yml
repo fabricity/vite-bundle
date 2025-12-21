@@ -30,10 +30,10 @@ jobs:
 
             - name: Install dependencies (restrict Symfony version)
               run: |
-                  composer update --prefer-stable --prefer-dist --no-interaction --no-progress --no-scripts
+                  composer update --prefer-stable --prefer-dist --no-interaction --no-plugins --no-scripts --no-progress
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   SYMFONY_REQUIRE: ${{ matrix.symfony }}
 
             - name: Run PHPUnit
-              run: vendor/bin/phpunit -c tools/phpunit.xml.dist --colors=always
+              run: vendor/bin/phpunit -c tools/phpunit.xml.dist --colors=always --no-coverage
