@@ -33,7 +33,8 @@ jobs:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: composer-${{ runner.os }}-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
                     restore-keys: |
-                        composer-${{ runner.os }}-${{ env.PHP_VERSION }}-
+                        composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+                        composer-${{ runner.os }}-
                         composer-
 
             -   name: Install dependencies

@@ -37,8 +37,9 @@ jobs:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.symfony }}-${{ hashFiles('composer.lock') }}
                     restore-keys: |
-                        composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.symfony }}-
-                        composer-${{ runner.os }}-${{ matrix.php }}-
+                        composer-${{ runner.os }}-php${{ matrix.php }}-symfony${{ matrix.symfony }}-
+                        composer-${{ runner.os }}-php${{ matrix.php }}-
+                        composer-${{ runner.os }}-
                         composer-
 
             -   name: Install dependencies
