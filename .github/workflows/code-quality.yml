@@ -3,15 +3,13 @@ name: Code Quality
 on:
     pull_request:
     push:
-        branches:
-            - main
+        branches: [ main ]
 
 env:
     PHP_VERSION: 8.4
 
 jobs:
     code-quality:
-        name: Code Quality
         runs-on: ubuntu-latest
 
         steps:
@@ -29,18 +27,17 @@ jobs:
                 id: composer-cache
                 run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-            -   name: Cache Composer dependencies
+            -   name: Cache Composer downloads
                 uses: actions/cache@v4
                 with:
-                    path: |
-                        vendor
-                        ${{ steps.composer-cache.outputs.dir }}
-                    key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: composer-${{ runner.os }}-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
                     restore-keys: |
-                        ${{ runner.os }}-php-${{ env.PHP_VERSION }}-
+                        composer-${{ runner.os }}-${{ env.PHP_VERSION }}-
+                        composer-
 
             -   name: Install dependencies
-                run: composer install --prefer-dist --no-progress --no-interaction
+                run: composer install --prefer-dist --no-interaction --no-progress
 
             -   name: Run PHPStan
                 run: vendor/bin/phpstan analyse --configuration=tools/phpstan.neon.dist --error-format=github
