@@ -33,8 +33,8 @@ jobs:
                     SYMFONY_REQUIRE: "${{ matrix.symfony }}"
                 run: |
                     composer global config --no-plugins allow-plugins.symfony/flex true
-                    composer global require --no-progress --no-scripts --no-plugins symfony/flex         
-                    composer update --prefer-dist --no-progress
+                    composer global require --no-progress --no-scripts --no-plugins symfony/flex
+                    composer update --prefer-dist --no-interaction --no-progress
 
             -   name: Run PHPUnit
                 run: vendor/bin/phpunit -c tools/phpunit.xml.dist --colors=always --no-coverage
