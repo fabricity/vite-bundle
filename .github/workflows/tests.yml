@@ -42,7 +42,7 @@ jobs:
                         composer-
 
             -   name: Install dependencies
-                run: composer update --prefer-dist
+                run: composer update --prefer-dist --no-interaction --no-progress
                 env:
                     SYMFONY_REQUIRE: "${{ matrix.symfony }}"
 
