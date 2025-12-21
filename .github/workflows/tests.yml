@@ -14,27 +14,23 @@ jobs:
             fail-fast: false
             matrix:
                 php: [ '8.4','8.5' ]
-                symfony: [ '6.4', '7.4', '8.*' ]
+                symfony: [ '6.4.*', '7.4.*', '8.*' ]
 
         name: PHPUnit (PHP ${{ matrix.php }}, Symfony ${{ matrix.symfony }})
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
 
-            -   name: Setup PHP
+            -   name: Install PHP
                 uses: shivammathur/setup-php@v2
                 with:
                     php-version: "${{ matrix.php }}"
-                    coverage: none
-                    tools: composer:v2
+                    tools: composer:v2,flex
 
-            -   name: Install dependencies (restrict Symfony version)
+            -   name: Install dependencies
+                run: composer update --prefer-dist
                 env:
                     SYMFONY_REQUIRE: "${{ matrix.symfony }}"
-                run: |
-                    composer global config --no-plugins allow-plugins.symfony/flex true
-                    composer global require --no-progress --no-scripts --no-plugins symfony/flex
-                    composer update --prefer-dist --no-interaction --no-progress
 
             -   name: Run PHPUnit
                 run: vendor/bin/phpunit -c tools/phpunit.xml.dist --colors=always --no-coverage
