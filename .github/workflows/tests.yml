@@ -21,12 +21,13 @@ jobs:
             -   name: Checkout code
                 uses: actions/checkout@v4
 
-            -   name: Cache Composer packages
-                uses: actions/cache@v4
+            -   uses: actions/cache@v4
                 with:
-                    path: ~/.composer/cache
-                    key: "php-${{ matrix.php }}-symfony-${{ matrix.symfony }}-composer-${{ hashFiles('composer.json') }}-"
-                    restore-keys: "php-"
+                    path: ~/.composer/cache/files
+                    key: composer-${{ matrix.php }}-${{ matrix.symfony }}-${{ hashFiles('composer.json') }}
+                    restore-keys: |
+                        composer-${{ matrix.php }}-
+                        composer-
 
             -   name: Install PHP
                 uses: shivammathur/setup-php@v2
