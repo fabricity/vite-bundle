@@ -15,7 +15,7 @@ class FabricityViteBundle extends AbstractBundle
     {
         $definition->rootNode()
             ->children()
-                ->scalarNode('dev_server')->defaultValue('http://localhost:5174')
+                ->scalarNode('dev_server')->defaultValue('http://localhost:5173')
             ->end()
         ;
     }
@@ -29,7 +29,7 @@ class FabricityViteBundle extends AbstractBundle
 
         $container->services()
             ->get('fabricity_vite.dev_server')
-                ->arg('$devServerUrl', $config['dev_server'])
+                ->arg('$url', $config['dev_server'])
         ;
     }
 }

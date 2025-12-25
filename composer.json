@@ -42,7 +42,6 @@
     "scripts": {
         "phpcs": "php-cs-fixer --config=./tools/.php-cs-fixer.dist.php fix",
         "phpstan": "phpstan --configuration=./tools/phpstan.neon.dist analyse",
-        "test:unit": "phpunit -c ./tools/phpunit.xml.dist --testsuite Unit",
         "test:functional": "phpunit -c ./tools/phpunit.xml.dist --testsuite Functional",
         "test": [
             "@test:unit",

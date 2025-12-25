@@ -12,7 +12,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Twig\Environment;
 
-class ViteDevTwigFunctionTest extends KernelTestCase
+class ViteTwigFunctionTest extends KernelTestCase
 {
     #[DataProvider('availabilityProvider')]
     public function testViteDevAvailability(array|callable $responses, string $expected): void
@@ -25,7 +25,7 @@ class ViteDevTwigFunctionTest extends KernelTestCase
         $twig = static::getContainer()->get(Environment::class);
 
         $output = $twig
-            ->createTemplate('{{ vite_dev() ? "running" : "not running" }}')
+            ->createTemplate('{{ vite.server ? "running" : "not running" }}')
             ->render();
 
         self::assertSame($expected, $output);

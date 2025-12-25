@@ -4,15 +4,23 @@ declare(strict_types=1);
 
 namespace Fabricity\Bundle\ViteBundle\Twig;
 
+use Fabricity\Bundle\ViteBundle\Vite\Server;
 use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Extension\GlobalsInterface;
 
-class ViteExtension extends AbstractExtension
+class ViteExtension extends AbstractExtension implements GlobalsInterface
 {
-    public function getFunctions(): array
+    public function __construct(
+        private readonly Server $devServer,
+    ) {
+    }
+
+    public function getGlobals(): array
     {
         return [
-            new TwigFunction('vite_dev', [ViteRuntime::class, 'dev'], ['is_safe' => ['html']]),
+            'vite' => [
+                'server' => $this->devServer->available(),
+            ],
         ];
     }
 }
