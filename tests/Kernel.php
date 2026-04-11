@@ -31,7 +31,7 @@ class Kernel extends BaseKernel
                 'secret' => 'f4br1c1ty',
             ]);
             $container->loadFromExtension('fabricity_vite', [
-                'dev_server' => 'http://localhost:5432',
+                'server' => 'http://localhost:5432',
             ]);
         });
     }
