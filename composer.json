@@ -45,7 +45,6 @@
         "phpstan": "phpstan --configuration=./tools/phpstan.neon.dist analyse",
         "test:functional": "phpunit -c ./tools/phpunit.xml.dist --testsuite Functional",
         "test": [
-            "@test:unit",
             "@test:functional"
         ]
     }

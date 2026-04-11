@@ -12,6 +12,7 @@ class Manifest
     public function __construct(
         private readonly string $publicDir,
         private readonly string $buildDir,
+        private readonly string $manifestPath = '.vite/manifest.json',
     ) {
     }
 
@@ -35,9 +36,10 @@ class Manifest
         }
 
         $fullPath = \sprintf(
-            '%s/%s/.vite/manifest.json',
+            '%s/%s/%s',
             rtrim($this->publicDir, '/'),
-            trim($this->buildDir, '/')
+            trim($this->buildDir, '/'),
+            ltrim($this->manifestPath, '/')
         );
 
         if (!file_exists($fullPath)) {
@@ -50,14 +52,11 @@ class Manifest
                 return $this->manifest = [];
             }
 
+            /** @var array<string, array{file: string}> $decoded */
             $decoded = json_decode($contents, true, 512, \JSON_THROW_ON_ERROR);
+            $this->manifest = $decoded;
 
-            if (!\is_array($decoded)) {
-                return $this->manifest = [];
-            }
-
-            /* @var array<string, array{file: string}> $decoded */
-            return $this->manifest = $decoded;
+            return $this->manifest;
         } catch (\JsonException) {
             return $this->manifest = [];
         }

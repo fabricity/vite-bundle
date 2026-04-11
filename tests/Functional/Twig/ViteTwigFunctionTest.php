@@ -4,31 +4,44 @@ declare(strict_types=1);
 
 namespace Fabricity\Bundle\ViteBundle\Tests\Functional\Twig;
 
+use Fabricity\Bundle\ViteBundle\Tests\Functional\ContainerTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Twig\Environment;
 
 class ViteTwigFunctionTest extends KernelTestCase
 {
+    use ContainerTrait;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+    }
+
     #[DataProvider('availabilityProvider')]
     public function testViteDevAvailability(array|callable $responses, string $expected): void
     {
-        self::bootKernel();
-
         static::getContainer()->set(HttpClientInterface::class, new MockHttpClient($responses));
 
-        /** @var Environment $twig */
-        $twig = static::getContainer()->get(Environment::class);
+        self::assertSame(
+            expected: $expected,
+            actual: $this->renderTemplate('{{ vite.server ? "running" : "not running" }}')
+        );
+    }
 
-        $output = $twig
-            ->createTemplate('{{ vite.server ? "running" : "not running" }}')
-            ->render();
-
-        self::assertSame($expected, $output);
+    public function testTwigAsset(): void
+    {
+        self::assertSame(
+            expected: '/build/assets/main-abc123.js',
+            actual: $this->renderTemplate('{{ asset("src/main.js", "frontend") }}')
+        );
+        self::assertSame(
+            expected: '/backend/assets/main-xyz789.js',
+            actual: $this->renderTemplate('{{ asset("src/main.js", "backend") }}')
+        );
     }
 
     public static function availabilityProvider(): iterable

@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+
 class FabricityViteBundle extends AbstractBundle
 {
     public function configure(DefinitionConfigurator $definition): void
@@ -22,9 +24,19 @@ class FabricityViteBundle extends AbstractBundle
                     ->cannotBeEmpty()
                     ->defaultValue('%kernel.project_dir%/public')
                 ->end()
-                ->scalarNode('build_dir')
-                    ->cannotBeEmpty()
-                    ->defaultValue('build')
+                ->arrayNode('builds')
+                    ->useAttributeAsKey('name')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('build_dir')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                            ->end()
+                            ->scalarNode('manifest_path')
+                                ->defaultValue('.vite/manifest.json')
+                            ->end()
+                        ->end()
+                    ->end()
                 ->end()
                 ->scalarNode('server')
                     ->cannotBeEmpty()
@@ -34,19 +46,10 @@ class FabricityViteBundle extends AbstractBundle
         ;
     }
 
-    public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
-    {
-        $builder->prependExtensionConfig('framework', [
-            'assets' => [
-                'version_strategy' => ViteVersionStrategy::class,
-            ],
-        ]);
-    }
-
     /**
      * @param array{
      *     public_dir: string,
-     *     build_dir: string,
+     *     builds: array<string, array{build_dir: string, manifest_path: string}>,
      *     server: string
      * } $config
      */
@@ -55,11 +58,25 @@ class FabricityViteBundle extends AbstractBundle
         $container->import('../config/services.php');
 
         $container->services()
-            ->get(Manifest::class)
-                ->arg('$publicDir', $config['public_dir'])
-                ->arg('$buildDir', $config['build_dir'])
             ->get(Server::class)
                 ->arg('$url', $config['server'])
         ;
+
+        $services = $container->services();
+        foreach ($config['builds'] as $name => $build) {
+            $manifestId = 'fabricity_vite.manifest.'.$name;
+            $strategyId = 'fabricity_vite.version_strategy.'.$name;
+
+            $services
+                ->set($manifestId, Manifest::class)
+                    ->arg('$publicDir', $config['public_dir'])
+                    ->arg('$buildDir', $build['build_dir'])
+                    ->arg('$manifestPath', $build['manifest_path'])
+                    ->public()
+                ->set($strategyId, ViteVersionStrategy::class)
+                    ->arg('$manifest', service($manifestId))
+                    ->public()
+            ;
+        }
     }
 }
