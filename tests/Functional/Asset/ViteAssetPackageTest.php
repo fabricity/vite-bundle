@@ -4,36 +4,26 @@ declare(strict_types=1);
 
 namespace Fabricity\Bundle\ViteBundle\Tests\Functional\Asset;
 
-use Fabricity\Bundle\ViteBundle\Tests\Functional\ContainerTrait;
+use Fabricity\Bundle\ViteBundle\Tests\Functional\HelperTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ViteAssetPackageTest extends KernelTestCase
 {
-    use ContainerTrait;
+    use HelperTrait;
 
-    public function testFrontendPackages(): void
+    public function testPackages(): void
     {
         $packages = $this->getPackages();
-
-        $frontend = $packages->getPackage('frontend');
-        $this->assertNotNull($frontend);
-
-        $this->assertSame(
-            expected: '/build/assets/main-abc123.js',
-            actual: $frontend->getUrl('src/main.js')
-        );
+        $this->assertNotNull($packages->getPackage('frontend'));
+        $this->assertNotNull($packages->getPackage('backend'));
     }
 
-    public function testBackendPackages(): void
+    #[DataProvider('assetsProvider')]
+    public function testAssets(string $package, string $path, string $expected): void
     {
-        $packages = $this->getPackages();
+        $package = $this->getPackages()->getPackage($package);
 
-        $package = $packages->getPackage('backend');
-        $this->assertNotNull($package);
-
-        $this->assertSame(
-            expected: '/backend/assets/main-xyz789.js',
-            actual: $package->getUrl('src/main.js')
-        );
+        $this->assertSame($expected, $package->getUrl($path));
     }
 }

@@ -44,7 +44,7 @@ class Kernel extends BaseKernel
                 'public_dir' => __DIR__.'/fixtures/public',
                 'server' => 'http://localhost:5432',
                 'builds' => [
-                    'frontend' => ['build_dir' => 'build'],
+                    'frontend' => ['build_dir' => 'frontend'],
                     'backend' => ['build_dir' => 'backend'],
                 ],
             ]);

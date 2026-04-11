@@ -6,8 +6,9 @@ namespace Fabricity\Bundle\ViteBundle\Vite;
 
 class Manifest
 {
-    /** @var array<string, array{file: string}>|null */
-    private ?array $manifest = null;
+    /** @var array<string, array{file: string, css?: list<string>}> */
+    private array $manifest = [];
+    private bool $isLoaded = false;
 
     public function __construct(
         private readonly string $publicDir,
@@ -21,17 +22,26 @@ class Manifest
         $trimmedPath = ltrim($path, '/');
         $manifest = $this->getManifest();
 
-        $file = $manifest[$trimmedPath]['file'] ?? $trimmedPath;
+        if (isset($manifest[$trimmedPath])) {
+            return rtrim($this->buildDir, '/').'/'.$manifest[$trimmedPath]['file'];
+        }
 
-        return rtrim($this->buildDir, '/').'/'.$file;
+        if (str_ends_with($trimmedPath, '.css')) {
+            $jsPath = substr($trimmedPath, 0, -4).'.js';
+            if (isset($manifest[$jsPath]['css'][0])) {
+                return rtrim($this->buildDir, '/').'/'.$manifest[$jsPath]['css'][0];
+            }
+        }
+
+        return rtrim($this->buildDir, '/').'/'.$trimmedPath;
     }
 
     /**
-     * @return array<string, array{file: string}>
+     * @return array<string, array{file: string, css?: list<string>}>
      */
     private function getManifest(): array
     {
-        if (null !== $this->manifest) {
+        if ($this->isLoaded) {
             return $this->manifest;
         }
 
@@ -42,23 +52,21 @@ class Manifest
             ltrim($this->manifestPath, '/')
         );
 
+        $this->isLoaded = true;
+
         if (!file_exists($fullPath)) {
             return $this->manifest = [];
         }
 
         try {
-            $contents = file_get_contents($fullPath);
-            if (false === $contents) {
-                return $this->manifest = [];
-            }
-
-            /** @var array<string, array{file: string}> $decoded */
+            $contents = (string) @file_get_contents($fullPath);
+            /** @var array<string, array{file: string, css?: list<string>}> $decoded */
             $decoded = json_decode($contents, true, 512, \JSON_THROW_ON_ERROR);
             $this->manifest = $decoded;
-
-            return $this->manifest;
-        } catch (\JsonException) {
-            return $this->manifest = [];
+        } catch (\JsonException|\ValueError) {
+            $this->manifest = [];
         }
+
+        return $this->manifest;
     }
 }

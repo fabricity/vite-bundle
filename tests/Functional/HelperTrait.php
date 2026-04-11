@@ -8,7 +8,7 @@ use Symfony\Component\Asset\Packages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
-trait ContainerTrait
+trait HelperTrait
 {
     abstract protected static function getContainer(): ContainerInterface;
 
@@ -25,5 +25,15 @@ trait ContainerTrait
     protected function renderTemplate(string $template, array $context = []): string
     {
         return $this->getTwig()->createTemplate($template)->render($context);
+    }
+
+    public static function assetsProvider(): array
+    {
+        return [
+            ['backend', 'src/main.js', '/backend/assets/main-xyz789.js'],
+            ['backend', 'src/main.css', '/backend/assets/main-xyz789.css'],
+            ['frontend', 'src/main.js', '/frontend/assets/main-abc123.js'],
+            ['frontend', 'src/main.css', '/frontend/assets/main-abc123.css'],
+        ];
     }
 }

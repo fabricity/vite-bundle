@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fabricity\Bundle\ViteBundle\Tests\Functional\Twig;
 
-use Fabricity\Bundle\ViteBundle\Tests\Functional\ContainerTrait;
+use Fabricity\Bundle\ViteBundle\Tests\Functional\HelperTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\Exception\TransportException;
@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ViteTwigFunctionTest extends KernelTestCase
 {
-    use ContainerTrait;
+    use HelperTrait;
 
     protected function setUp(): void
     {
@@ -24,24 +24,18 @@ class ViteTwigFunctionTest extends KernelTestCase
     #[DataProvider('availabilityProvider')]
     public function testViteDevAvailability(array|callable $responses, string $expected): void
     {
-        static::getContainer()->set(HttpClientInterface::class, new MockHttpClient($responses));
+        $template = '{{ vite.server ? "running" : "not running" }}';
 
-        self::assertSame(
-            expected: $expected,
-            actual: $this->renderTemplate('{{ vite.server ? "running" : "not running" }}')
-        );
+        static::getContainer()->set(HttpClientInterface::class, new MockHttpClient($responses));
+        self::assertSame($expected, $this->renderTemplate($template));
     }
 
-    public function testTwigAsset(): void
+    #[DataProvider('assetsProvider')]
+    public function testAssets(string $package, string $path, string $expected): void
     {
-        self::assertSame(
-            expected: '/build/assets/main-abc123.js',
-            actual: $this->renderTemplate('{{ asset("src/main.js", "frontend") }}')
-        );
-        self::assertSame(
-            expected: '/backend/assets/main-xyz789.js',
-            actual: $this->renderTemplate('{{ asset("src/main.js", "backend") }}')
-        );
+        $template = \sprintf('{{ asset("%s", "%s") }}', $path, $package);
+
+        self::assertSame($expected, $this->renderTemplate($template));
     }
 
     public static function availabilityProvider(): iterable
