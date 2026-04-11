@@ -24,10 +24,18 @@ class ViteTwigFunctionTest extends KernelTestCase
     #[DataProvider('availabilityProvider')]
     public function testViteDevAvailability(array|callable $responses, string $expected): void
     {
-        $template = '{{ vite.server ? "running" : "not running" }}';
+        $template = '{{ vite.dev ? "running" : "not running" }}';
 
         static::getContainer()->set(HttpClientInterface::class, new MockHttpClient($responses));
         self::assertSame($expected, $this->renderTemplate($template));
+    }
+
+    public function testDevClient(): void
+    {
+        self::assertSame(
+            expected: 'http://localhost:5432/@vite/client',
+            actual: $this->renderTemplate('{{ vite.devClient }}')
+        );
     }
 
     #[DataProvider('assetsProvider')]

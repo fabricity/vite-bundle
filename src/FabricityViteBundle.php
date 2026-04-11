@@ -6,8 +6,8 @@ namespace Fabricity\Bundle\ViteBundle;
 
 use Fabricity\Bundle\ViteBundle\Asset\ViteVersionStrategy;
 use Fabricity\Bundle\ViteBundle\Twig\ViteExtension;
+use Fabricity\Bundle\ViteBundle\Vite\DevServer;
 use Fabricity\Bundle\ViteBundle\Vite\Manifest;
-use Fabricity\Bundle\ViteBundle\Vite\Server;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -61,7 +61,7 @@ class FabricityViteBundle extends AbstractBundle
 
         if (null !== $config['server']) {
             $services
-                ->set(Server::class)
+                ->set(DevServer::class)
                     ->arg('$httpClient', service(HttpClientInterface::class))
                     ->arg('$url', $config['server'])
             ;
@@ -69,7 +69,7 @@ class FabricityViteBundle extends AbstractBundle
 
         $services
             ->set(ViteExtension::class)
-                ->arg('$server', service(Server::class)->nullOnInvalid())
+                ->arg('$server', service(DevServer::class)->nullOnInvalid())
                 ->tag('twig.extension')
         ;
 
@@ -81,7 +81,7 @@ class FabricityViteBundle extends AbstractBundle
                         ->arg('$buildDir', $build['build_dir'])
                         ->arg('$manifestPath', $build['manifest_path'])
                     )
-                    ->arg('$server', service(Server::class)->nullOnInvalid())
+                    ->arg('$server', service(DevServer::class)->nullOnInvalid())
                     ->public()
             ;
         }
