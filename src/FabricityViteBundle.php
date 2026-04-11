@@ -11,8 +11,7 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\inline_service;
 
 class FabricityViteBundle extends AbstractBundle
 {
@@ -64,17 +63,13 @@ class FabricityViteBundle extends AbstractBundle
 
         $services = $container->services();
         foreach ($config['builds'] as $name => $build) {
-            $manifestId = 'fabricity_vite.manifest.'.$name;
-            $strategyId = 'fabricity_vite.version_strategy.'.$name;
-
             $services
-                ->set($manifestId, Manifest::class)
-                    ->arg('$publicDir', $config['public_dir'])
-                    ->arg('$buildDir', $build['build_dir'])
-                    ->arg('$manifestPath', $build['manifest_path'])
-                    ->public()
-                ->set($strategyId, ViteVersionStrategy::class)
-                    ->arg('$manifest', service($manifestId))
+                ->set('fabricity_vite.version_strategy.'.$name, ViteVersionStrategy::class)
+                    ->arg('$manifest', inline_service(Manifest::class)
+                        ->arg('$publicDir', $config['public_dir'])
+                        ->arg('$buildDir', $build['build_dir'])
+                        ->arg('$manifestPath', $build['manifest_path'])
+                    )
                     ->public()
             ;
         }
