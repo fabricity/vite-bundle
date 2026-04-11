@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Fabricity\Bundle\ViteBundle;
 
+use Fabricity\Bundle\ViteBundle\Asset\ViteVersionStrategy;
+use Fabricity\Bundle\ViteBundle\Twig\ViteExtension;
+use Fabricity\Bundle\ViteBundle\Vite\DevServer;
+use Fabricity\Bundle\ViteBundle\Vite\Manifest;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+use function Symfony\Component\DependencyInjection\Loader\Configurator\inline_service;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 class FabricityViteBundle extends AbstractBundle
 {
@@ -15,21 +23,67 @@ class FabricityViteBundle extends AbstractBundle
     {
         $definition->rootNode()
             ->children()
-                ->scalarNode('dev_server')->defaultValue('http://localhost:5173')
+                ->scalarNode('public_dir')
+                    ->cannotBeEmpty()
+                    ->defaultValue('%kernel.project_dir%/public')
+                ->end()
+                ->arrayNode('builds')
+                    ->useAttributeAsKey('name')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('build_dir')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                            ->end()
+                            ->scalarNode('manifest_path')
+                                ->defaultValue('.vite/manifest.json')
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->scalarNode('server')
+                    ->defaultNull()
+                ->end()
             ->end()
         ;
     }
 
     /**
-     * @param array{ dev_server: string } $config
+     * @param array{
+     *     public_dir: string,
+     *     builds: array<string, array{build_dir: string, manifest_path: string}>,
+     *     server: string|null
+     * } $config
      */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $container->import('../config/services.php');
+        $services = $container->services()->defaults()->private();
 
-        $container->services()
-            ->get('fabricity_vite.dev_server')
-                ->arg('$url', $config['dev_server'])
+        if (null !== $config['server']) {
+            $services
+                ->set(DevServer::class)
+                    ->arg('$httpClient', service(HttpClientInterface::class))
+                    ->arg('$url', $config['server'])
+            ;
+        }
+
+        $services
+            ->set(ViteExtension::class)
+                ->arg('$server', service(DevServer::class)->nullOnInvalid())
+                ->tag('twig.extension')
         ;
+
+        foreach ($config['builds'] as $name => $build) {
+            $services
+                ->set('fabricity_vite.version_strategy.'.$name, ViteVersionStrategy::class)
+                    ->arg('$manifest', inline_service(Manifest::class)
+                        ->arg('$publicDir', $config['public_dir'])
+                        ->arg('$buildDir', $build['build_dir'])
+                        ->arg('$manifestPath', $build['manifest_path'])
+                    )
+                    ->arg('$server', service(DevServer::class)->nullOnInvalid())
+                    ->public()
+            ;
+        }
     }
 }

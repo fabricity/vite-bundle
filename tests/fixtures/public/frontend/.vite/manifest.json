@@ -1,0 +1,8 @@
+{
+    "src/main.js": {
+        "file": "assets/main-abc123.js"
+    },
+    "src/main.css": {
+        "file": "assets/main-abc123.css"
+    }
+}

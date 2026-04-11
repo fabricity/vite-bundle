@@ -14,11 +14,12 @@
     ],
     "require": {
         "php": ">=8.4",
-        "symfony/framework-bundle": "^6.4 || ^7.4 || ^8.0",
-        "symfony/dependency-injection": "^6.4 || ^7.4 || ^8.0",
+        "symfony/asset": "^6.4 || ^7.4 || ^8.0",
         "symfony/config": "^6.4 || ^7.4 || ^8.0",
-        "symfony/twig-bundle": "^6.4 || ^7.4 || ^8.0",
-        "symfony/http-client": "^6.4 || ^7.4 || ^8.0"
+        "symfony/dependency-injection": "^6.4 || ^7.4 || ^8.0",
+        "symfony/framework-bundle": "^6.4 || ^7.4 || ^8.0",
+        "symfony/http-client": "^6.4 || ^7.4 || ^8.0",
+        "symfony/twig-bundle": "^6.4 || ^7.4 || ^8.0"
     },
     "config": {
         "preferred-install": "dist",
@@ -44,7 +45,6 @@
         "phpstan": "phpstan --configuration=./tools/phpstan.neon.dist analyse",
         "test:functional": "phpunit -c ./tools/phpunit.xml.dist --testsuite Functional",
         "test": [
-            "@test:unit",
             "@test:functional"
         ]
     }

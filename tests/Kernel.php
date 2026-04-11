@@ -29,9 +29,24 @@ class Kernel extends BaseKernel
             $container->loadFromExtension('framework', [
                 'test' => true,
                 'secret' => 'f4br1c1ty',
+                'assets' => [
+                    'packages' => [
+                        'frontend' => [
+                            'version_strategy' => 'fabricity_vite.version_strategy.frontend',
+                        ],
+                        'backend' => [
+                            'version_strategy' => 'fabricity_vite.version_strategy.backend',
+                        ],
+                    ],
+                ],
             ]);
             $container->loadFromExtension('fabricity_vite', [
-                'dev_server' => 'http://localhost:5432',
+                'public_dir' => __DIR__.'/fixtures/public',
+                'server' => 'http://localhost:5432',
+                'builds' => [
+                    'frontend' => ['build_dir' => 'frontend'],
+                    'backend' => ['build_dir' => 'backend'],
+                ],
             ]);
         });
     }
