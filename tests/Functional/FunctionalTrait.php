@@ -8,7 +8,7 @@ use Symfony\Component\Asset\Packages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
-trait HelperTrait
+trait FunctionalTrait
 {
     abstract protected static function getContainer(): ContainerInterface;
 

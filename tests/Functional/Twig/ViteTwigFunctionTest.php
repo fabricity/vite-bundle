@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fabricity\Bundle\ViteBundle\Tests\Functional\Twig;
 
-use Fabricity\Bundle\ViteBundle\Tests\Functional\HelperTrait;
+use Fabricity\Bundle\ViteBundle\Tests\Functional\FunctionalTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\Exception\TransportException;
@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ViteTwigFunctionTest extends KernelTestCase
 {
-    use HelperTrait;
+    use FunctionalTrait;
 
     protected function setUp(): void
     {
