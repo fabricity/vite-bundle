@@ -11,7 +11,7 @@ use Twig\Extension\GlobalsInterface;
 class ViteExtension extends AbstractExtension implements GlobalsInterface
 {
     public function __construct(
-        private readonly Server $devServer,
+        private readonly ?Server $server = null,
     ) {
     }
 
@@ -19,7 +19,7 @@ class ViteExtension extends AbstractExtension implements GlobalsInterface
     {
         return [
             'vite' => [
-                'server' => $this->devServer->available(),
+                'server' => $this->server?->available() ?? false,
             ],
         ];
     }

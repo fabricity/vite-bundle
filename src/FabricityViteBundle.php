@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Fabricity\Bundle\ViteBundle;
 
 use Fabricity\Bundle\ViteBundle\Asset\ViteVersionStrategy;
+use Fabricity\Bundle\ViteBundle\Twig\ViteExtension;
 use Fabricity\Bundle\ViteBundle\Vite\Manifest;
 use Fabricity\Bundle\ViteBundle\Vite\Server;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\inline_service;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 class FabricityViteBundle extends AbstractBundle
 {
@@ -39,8 +42,7 @@ class FabricityViteBundle extends AbstractBundle
                     ->end()
                 ->end()
                 ->scalarNode('server')
-                    ->cannotBeEmpty()
-                    ->defaultValue('http://localhost:5173')
+                    ->defaultNull()
                 ->end()
             ->end()
         ;
@@ -50,19 +52,27 @@ class FabricityViteBundle extends AbstractBundle
      * @param array{
      *     public_dir: string,
      *     builds: array<string, array{build_dir: string, manifest_path: string}>,
-     *     server: string
+     *     server: string|null
      * } $config
      */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $container->import('../config/services.php');
+        $services = $container->services()->defaults()->private();
 
-        $container->services()
-            ->get(Server::class)
-                ->arg('$url', $config['server'])
+        if (null !== $config['server']) {
+            $services
+                ->set(Server::class)
+                    ->arg('$httpClient', service(HttpClientInterface::class))
+                    ->arg('$url', $config['server'])
+            ;
+        }
+
+        $services
+            ->set(ViteExtension::class)
+                ->arg('$server', service(Server::class)->nullOnInvalid())
+                ->tag('twig.extension')
         ;
 
-        $services = $container->services();
         foreach ($config['builds'] as $name => $build) {
             $services
                 ->set('fabricity_vite.version_strategy.'.$name, ViteVersionStrategy::class)
@@ -71,6 +81,7 @@ class FabricityViteBundle extends AbstractBundle
                         ->arg('$buildDir', $build['build_dir'])
                         ->arg('$manifestPath', $build['manifest_path'])
                     )
+                    ->arg('$server', service(Server::class)->nullOnInvalid())
                     ->public()
             ;
         }
