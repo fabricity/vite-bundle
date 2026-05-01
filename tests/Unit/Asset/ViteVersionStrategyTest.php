@@ -31,7 +31,7 @@ class ViteVersionStrategyTest extends TestCase
 
         $server = $this->createMock(DevServer::class);
         $server->method('available')->willReturn(true);
-        $server->method('assetUrl')->with('src/main.js')->willReturn('http://localhost:5173/src/main.js');
+        $server->expects(self::once())->method('assetUrl')->with('src/main.js')->willReturn('http://localhost:5173/src/main.js');
 
         $strategy = new ViteVersionStrategy($manifest, $server);
 
