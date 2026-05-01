@@ -29,7 +29,7 @@ class ViteVersionStrategyTest extends TestCase
         $manifest = $this->createMock(Manifest::class);
         $manifest->expects(self::never())->method('get');
 
-        $server = $this->createStub(DevServer::class);
+        $server = $this->createMock(DevServer::class);
         $server->method('available')->willReturn(true);
         $server->method('assetUrl')->with('src/main.js')->willReturn('http://localhost:5173/src/main.js');
 
