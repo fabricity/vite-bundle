@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fabricity\Bundle\ViteBundle\Tests;
 
+use Psr\Log\NullLogger;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
@@ -25,10 +26,13 @@ class Kernel extends BaseKernel
 
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(function ($container) {
+        $loader->load(static function ($container) {
             $container->loadFromExtension('framework', [
                 'test' => true,
                 'secret' => 'f4br1c1ty',
+                'php_errors' => ['log' => true],
+                'http_method_override' => false,
+                'handle_all_throwables' => true,
                 'assets' => [
                     'packages' => [
                         'frontend' => [
@@ -40,6 +44,8 @@ class Kernel extends BaseKernel
                     ],
                 ],
             ]);
+            $container->register('logger', NullLogger::class);
+
             $container->loadFromExtension('fabricity_vite', [
                 'public_dir' => __DIR__.'/fixtures/public',
                 'server' => 'http://localhost:5432',
