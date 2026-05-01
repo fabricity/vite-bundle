@@ -43,9 +43,7 @@
     "scripts": {
         "phpcs": "php-cs-fixer --config=./tools/.php-cs-fixer.dist.php fix",
         "phpstan": "phpstan --configuration=./tools/phpstan.neon.dist analyse",
-        "test:functional": "phpunit -c ./tools/phpunit.xml.dist --testsuite Functional",
-        "test": [
-            "@test:functional"
-        ]
+        "test": "phpunit -c ./tools/phpunit.xml.dist --no-coverage",
+        "test:coverage": "XDEBUG_MODE=coverage phpunit -c ./tools/phpunit.xml.dist"
     }
 }

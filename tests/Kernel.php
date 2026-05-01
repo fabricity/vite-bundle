@@ -29,6 +29,9 @@ class Kernel extends BaseKernel
             $container->loadFromExtension('framework', [
                 'test' => true,
                 'secret' => 'f4br1c1ty',
+                'php_errors' => ['log' => true],
+                'http_method_override' => false,
+                'handle_all_throwables' => true,
                 'assets' => [
                     'packages' => [
                         'frontend' => [

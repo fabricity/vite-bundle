@@ -46,6 +46,22 @@ class ViteTwigFunctionTest extends KernelTestCase
         self::assertSame($expected, $this->renderTemplate($template));
     }
 
+    public function testAssetsDev(): void
+    {
+        static::getContainer()->set(HttpClientInterface::class,
+            new MockHttpClient(new MockResponse(info: ['http_code' => 200]))
+        );
+
+        self::assertSame(
+            expected: 'http://localhost:5432/src/main.js',
+            actual: $this->renderTemplate('{{ asset("src/main.js", "backend") }}')
+        );
+        self::assertSame(
+            expected: '/backend/assets/main-xyz789.css',
+            actual: $this->renderTemplate('{{ asset("src/main.css", "backend") }}')
+        );
+    }
+
     public static function availabilityProvider(): iterable
     {
         yield 'running' => [
