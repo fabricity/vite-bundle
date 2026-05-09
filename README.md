@@ -18,7 +18,7 @@ detects the Vite dev server, reads the production manifest, and exposes simple T
 ## Philosophy
 
 This bundle resolves asset URLs through the Vite manifest and the Symfony Asset component — nothing more. It does 
-*not* auto-generate `<script>`, `<link>`, or `<link rel="modulepreload">` tags for you.
+**not** auto-generate `<script>`, `<link>`, or `<link rel="modulepreload">` tags for you.
 
 This is intentional. You stay in full control of your HTML: which assets to preload, where to place scripts, whether to
 add `async`, `defer`, `crossorigin`, or `integrity` attributes. The bundle gives you the correct URLs; you decide how to
