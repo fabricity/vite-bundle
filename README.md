@@ -4,7 +4,8 @@
 [![PHPUnit](https://github.com/fabricity/vite-bundle/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/fabricity/vite-bundle/actions/workflows/tests.yml)
 [![PHPStan](https://img.shields.io/badge/PHPStan-max-brightgreen)](https://phpstan.org)
 
-A lightweight Symfony bundle that integrates [Vite](https://vitejs.dev) into your Symfony application. It automatically detects the Vite dev server, reads the production manifest, and exposes simple Twig globals for loading compiled assets.
+A lightweight Symfony bundle that integrates [Vite](https://vitejs.dev) into your Symfony application. It automatically
+detects the Vite dev server, reads the production manifest, and exposes simple Twig globals for loading compiled assets.
 
 ## Features
 
@@ -13,6 +14,15 @@ A lightweight Symfony bundle that integrates [Vite](https://vitejs.dev) into you
 - Multiple independent build support (e.g. `frontend` / `backend`)
 - Symfony Asset `VersionStrategyInterface` integration
 - Twig globals (`vite.dev`, `vite.devClient`) for conditional script loading
+
+## Philosophy
+
+This bundle resolves asset URLs through the Vite manifest and the Symfony Asset component — nothing more. It does **not
+** auto-generate `<script>`, `<link>`, or `<link rel="modulepreload">` tags for you.
+
+This is intentional. You stay in full control of your HTML: which assets to preload, where to place scripts, whether to
+add `async`, `defer`, `crossorigin`, or `integrity` attributes. The bundle gives you the correct URLs; you decide how to
+load them.
 
 ## Requirements
 
@@ -45,7 +55,7 @@ npm install --save-dev vite
 Create a `vite.config.js` at the root of your project:
 
 ```js
-import { defineConfig } from 'vite'
+import {defineConfig} from 'vite'
 
 export default defineConfig({
     build: {
@@ -95,19 +105,21 @@ fabricity_vite:
             build_dir: build/backend
 ```
 
-Each entry under `builds` registers a Symfony Asset version strategy service named `fabricity_vite.version_strategy.<name>`.
+Each entry under `builds` registers a Symfony Asset version strategy service named
+`fabricity_vite.version_strategy.<name>`.
 
 ### Multiple builds
 
-You can define as many builds as you need. This is useful when you have separate Vite configs for different parts of your application.
+You can define as many builds as you need. This is useful when you have separate Vite configs for different parts of
+your application.
 
 ## Twig integration
 
 The bundle registers a Twig extension that exposes a global `vite` variable:
 
-| Variable | Type | Description |
-|---|---|---|
-| `vite.dev` | `bool` | `true` when the Vite dev server is reachable |
+| Variable         | Type           | Description                                  |
+|------------------|----------------|----------------------------------------------|
+| `vite.dev`       | `bool`         | `true` when the Vite dev server is reachable |
 | `vite.devClient` | `string\|null` | URL to the Vite HMR client (`/@vite/client`) |
 
 Use it in your base template to conditionally load the dev client:
@@ -143,7 +155,8 @@ Then use the standard Symfony `asset()` helper in Twig:
 
 ### CSS co-located with JS
 
-When Vite bundles CSS alongside a JS entry point, you can reference the CSS file using its `.css` extension even though it is listed under a `.js` key in the manifest:
+When Vite bundles CSS alongside a JS entry point, you can reference the CSS file using its `.css` extension even though
+it is listed under a `.js` key in the manifest:
 
 ```twig
 <link rel="stylesheet" href="{{ asset('src/app.css', 'frontend') }}">
