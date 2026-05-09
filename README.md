@@ -34,6 +34,46 @@ return [
 ];
 ```
 
+## Vite Setup
+
+Install Vite in your project:
+
+```bash
+npm install --save-dev vite
+```
+
+Create a `vite.config.js` at the root of your project:
+
+```js
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+    build: {
+        manifest: true,
+        outDir: 'public/build/frontend',
+        rollupOptions: {
+            input: 'assets/main.js',
+        },
+    },
+    server: {
+        origin: 'http://localhost:5173',
+    },
+})
+```
+
+Add the following scripts to your `package.json`:
+
+```json
+{
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    }
+}
+```
+
+Run `npm run dev` during development and `npm run build` for production.
+
 ## Configuration
 
 Create `config/packages/fabricity_vite.yaml`:
